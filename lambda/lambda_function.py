@@ -22,11 +22,19 @@ class LaunchRequestHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
-        speak_output = "Chat G.P.T. mode activated"
+        
+        speak_output = speak_output_en = "Chat G.P.T. mode activated"
+        speak_output_es = "Hola, soy Chat G. P. T."
+        
+        locale = handler_input.request_envelope.request.locale
+        if "en-" in locale:
+            speak_output = speak_output_en
+        elif "es-" in locale:
+            speak_output = speak_output_es
 
         return (
             handler_input.response_builder
-                .speak(speak_output)
+                .speak(getSSML(speak_output))
                 .ask(speak_output)
                 .response
         )
@@ -44,7 +52,7 @@ class GptQueryIntentHandler(AbstractRequestHandler):
 
         return (
                 handler_input.response_builder
-                    .speak(response)
+                    .speak(getSSML(response))
                     .ask("Any other questions?")
                     .response
             )
@@ -59,12 +67,19 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
         # type: (HandlerInput, Exception) -> Response
         logger.error(exception, exc_info=True)
 
-        speak_output = "Sorry, I had trouble doing what you asked. Please try again."
+        speak_output = speak_output_en = "Sorry, I had trouble doing what you asked. Please try again."
+        speak_output_es = "Tuve problemas con esto. Intenta de nuevo."
+        
+        locale = handler_input.request_envelope.request.locale
+        if "en-" in locale:
+            speak_output = speak_output_en
+        elif "es-" in locale:
+            speak_output = speak_output_es
 
         return (
             handler_input.response_builder
                 .speak(speak_output)
-                .ask(speak_output)
+                .ask(getSSML(speak_output))
                 .response
         )
 
@@ -77,7 +92,14 @@ class CancelOrStopIntentHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
-        speak_output = "Leaving Chat G.P.T. mode"
+        speak_output = speak_output_en = "Leaving Chat G.P.T. mode"
+        speak_output_es = "Chat G. P. T. desactivado"
+        
+        locale = handler_input.request_envelope.request.locale
+        if "en-" in locale:
+            speak_output = speak_output_en
+        elif "es-" in locale:
+            speak_output = speak_output_es
 
         return (
             handler_input.response_builder
@@ -100,6 +122,9 @@ def generate_gpt_response(query):
         return response['choices'][0]['message']['content'].strip()
     except Exception as e:
         return f"Error generating response: {str(e)}"
+
+def getSSML(responseText):
+    return "<speak><voice name=\"Miguel\">"+responseText+"</voice></speak>"
 
 sb = SkillBuilder()
 
