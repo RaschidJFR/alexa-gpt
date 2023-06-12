@@ -24,7 +24,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
         # type: (HandlerInput) -> Response
         
         speak_output = speak_output_en = "Chat G.P.T. mode activated"
-        speak_output_es = "Hola, soy Chat G. P. T."
+        speak_output_es = "<speak><s>Activando Chat G. P. T.</s><voice name=\"Miguel\">Estoy listo.</voice></speak>"
         
         locale = handler_input.request_envelope.request.locale
         if "en-" in locale:
@@ -34,7 +34,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
 
         return (
             handler_input.response_builder
-                .speak(getSSML(speak_output))
+                .speak(speak_output)
                 .ask(speak_output)
                 .response
         )
@@ -68,7 +68,7 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
         logger.error(exception, exc_info=True)
 
         speak_output = speak_output_en = "Sorry, I had trouble doing what you asked. Please try again."
-        speak_output_es = "Tuve problemas con esto. Intenta de nuevo."
+        speak_output_es = "Tuve un problema. Intenta de nuevo."
         
         locale = handler_input.request_envelope.request.locale
         if "en-" in locale:
